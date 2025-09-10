@@ -1,6 +1,7 @@
 // Global variables
 let audioPlayer;
-let currentLanguage = 'spanish';
+// Always show both languages in this romantic version
+let currentLanguage = 'both';
 let isPlaying = false;
 let currentTime = 0;
 let duration = 0;
@@ -262,134 +263,16 @@ function initializeEventListeners() {
     });
 
     // Sync controls
-    const syncBtn = document.getElementById('syncModeBtn');
-    const offsetInput = document.getElementById('offsetInput');
-    const rateInput = document.getElementById('rateInput');
-    const prevLineBtn = document.getElementById('prevLineBtn');
-    const nextLineBtn = document.getElementById('nextLineBtn');
-    const resetLineBtn = document.getElementById('resetLineBtn');
-    const saveTimingsBtn = document.getElementById('saveTimingsBtn');
-    const anchorStartBtn = document.getElementById('anchorStartBtn');
-    const anchorRateBtn = document.getElementById('anchorRateBtn');
-    const leadInput = document.getElementById('leadInput');
-    const lineLeadInput = document.getElementById('lineLeadInput');
-    const autoSyncInput = document.getElementById('autoSyncInput');
-
-    if (syncBtn) {
-        syncBtn.addEventListener('click', toggleSyncMode);
-    }
-    if (offsetInput) {
-        offsetInput.addEventListener('input', (e) => {
-            offsetSeconds = parseFloat(e.target.value) || 0;
-        });
-    }
-    if (rateInput) {
-        rateInput.addEventListener('input', (e) => {
-            rateFactor = parseFloat(e.target.value) || 1.0;
-        });
-    }
-    if (leadInput) {
-        leadInput.addEventListener('input', (e) => {
-            leadSeconds = parseFloat(e.target.value) || 0;
-        });
-    }
-    if (lineLeadInput) {
-        lineLeadInput.addEventListener('input', (e) => {
-            lineLeadSeconds = parseFloat(e.target.value) || 0;
-        });
-    }
-    if (autoSyncInput) {
-        autoSync = !!autoSyncInput.checked;
-        autoSyncInput.addEventListener('change', (e) => {
-            autoSync = !!e.target.checked;
-        });
-    }
-    if (prevLineBtn) prevLineBtn.addEventListener('click', () => jumpLine(-1));
-    if (nextLineBtn) nextLineBtn.addEventListener('click', () => jumpLine(1));
-    if (resetLineBtn) resetLineBtn.addEventListener('click', clearCurrentLineTimings);
-    if (saveTimingsBtn) saveTimingsBtn.addEventListener('click', downloadTimings);
-    if (anchorStartBtn) anchorStartBtn.addEventListener('click', setAnchorStartFromNow);
-    if (anchorRateBtn) anchorRateBtn.addEventListener('click', computeRateFromAnchor);
+    // Developer sync controls removed for the romantic version
 
     // Keyboard for tap mode
     document.addEventListener('keydown', (ev) => {
         // Global calibration nudges
-        if (ev.altKey && ev.code === 'ArrowRight') { // nudge offset forward
-            offsetSeconds = +(offsetSeconds + 0.05).toFixed(3);
-            const offsetInput = document.getElementById('offsetInput'); if (offsetInput) offsetInput.value = offsetSeconds.toFixed(2);
-            console.log(`➡️ Offset: ${offsetSeconds.toFixed(2)}s`);
-            ev.preventDefault(); return;
-        }
-        if (ev.altKey && ev.code === 'ArrowLeft') { // nudge offset backward
-            offsetSeconds = +(offsetSeconds - 0.05).toFixed(3);
-            const offsetInput = document.getElementById('offsetInput'); if (offsetInput) offsetInput.value = offsetSeconds.toFixed(2);
-            console.log(`⬅️ Offset: ${offsetSeconds.toFixed(2)}s`);
-            ev.preventDefault(); return;
-        }
-        if (ev.altKey && ev.code === 'ArrowUp') { // increase rate
-            rateFactor = +(rateFactor + 0.002).toFixed(3);
-            const rateInput = document.getElementById('rateInput'); if (rateInput) rateInput.value = rateFactor.toFixed(3);
-            console.log(`🔼 Rate: ${rateFactor.toFixed(3)}`);
-            ev.preventDefault(); return;
-        }
-        if (ev.altKey && ev.code === 'ArrowDown') { // decrease rate
-            rateFactor = +(rateFactor - 0.002).toFixed(3);
-            const rateInput = document.getElementById('rateInput'); if (rateInput) rateInput.value = rateFactor.toFixed(3);
-            console.log(`🔽 Rate: ${rateFactor.toFixed(3)}`);
-            ev.preventDefault(); return;
-        }
-
-        if (ev.altKey && ev.code === 'KeyL') { // nudge lead
-            leadSeconds = +(leadSeconds + 0.01).toFixed(2);
-            const input = document.getElementById('leadInput'); if (input) input.value = leadSeconds.toFixed(2);
-            console.log(`⏩ Lead: ${leadSeconds.toFixed(2)}s`);
-            ev.preventDefault(); return;
-        }
-        if (ev.altKey && ev.code === 'KeyK') { // nudge lead back
-            leadSeconds = +(leadSeconds - 0.01).toFixed(2);
-            const input = document.getElementById('leadInput'); if (input) input.value = leadSeconds.toFixed(2);
-            console.log(`⏪ Lead: ${leadSeconds.toFixed(2)}s`);
-            ev.preventDefault(); return;
-        }
-
-        if (ev.altKey && ev.code === 'KeyO') { // increase line lead
-            lineLeadSeconds = +(lineLeadSeconds + 0.01).toFixed(2);
-            const input = document.getElementById('lineLeadInput'); if (input) input.value = lineLeadSeconds.toFixed(2);
-            console.log(`⏭️ Line Lead: ${lineLeadSeconds.toFixed(2)}s`);
-            ev.preventDefault(); return;
-        }
-        if (ev.altKey && ev.code === 'KeyI') { // decrease line lead
-            lineLeadSeconds = +(lineLeadSeconds - 0.01).toFixed(2);
-            const input = document.getElementById('lineLeadInput'); if (input) input.value = lineLeadSeconds.toFixed(2);
-            console.log(`⏮️ Line Lead: ${lineLeadSeconds.toFixed(2)}s`);
-            ev.preventDefault(); return;
-        }
-
-        if (!syncMode) return;
-        if (ev.code === 'Space') { ev.preventDefault(); tapWord(); }
-        else if (ev.code === 'Enter') { ev.preventDefault(); endCurrentLine(); }
-        else if (ev.code === 'Backspace') { ev.preventDefault(); undoTap(); }
+    // Keyboard developer shortcuts removed
     });
 }
 
-function switchLanguage(language) {
-    currentLanguage = language;
-    
-    // Update button states
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    if (language === 'spanish') {
-        document.getElementById('spanishBtn').classList.add('active');
-    } else if (language === 'english') {
-        document.getElementById('englishBtn').classList.add('active');
-    } else if (language === 'both') {
-        document.getElementById('bothBtn').classList.add('active');
-    }
-    
-    displayLyrics();
-}
+// Language switcher removed — always both
 
 function displayLyrics() {
     const lyricsDisplay = document.getElementById('lyricsDisplay');

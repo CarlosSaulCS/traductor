@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%);
     min-height: 100vh;
     color: #333;
 }
@@ -31,15 +31,15 @@ header {
 }
 
 header h1 {
-    color: #4a5568;
+    color: #c53030;
     font-size: 2.5em;
     margin-bottom: 10px;
 }
 
 header h2 {
-    color: #718096;
+    color: #a63a50;
     font-style: italic;
-    font-size: 1.5em;
+    font-size: 1.3em;
 }
 
 /* Audio Section */
@@ -49,17 +49,11 @@ header h2 {
 }
 
 /* Sync Controls */
-.sync-controls {
-    margin: 16px 0 24px;
-    padding: 12px;
-    border: 1px dashed #cbd5e0;
-    border-radius: 12px;
-    background: #f7fafc;
-}
-.sync-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
-.sync-controls input { width: 90px; padding: 6px 8px; }
-.sync-controls .calibration { display: inline-flex; gap: 12px; align-items: center; }
-.sync-hint { color: #718096; font-size: 0.9em; }
+.sync-controls { display: none; }
+.sync-row { display: none; }
+.sync-controls input { display: none; }
+.sync-controls .calibration { display: none; }
+.sync-hint { display: none; }
 
 #audioPlayer {
     width: 100%;
@@ -75,35 +69,8 @@ header h2 {
 }
 
 /* Language Selector */
-.language-selector {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 30px;
-}
-
-.lang-btn {
-    padding: 10px 20px;
-    border: 2px solid #667eea;
-    background: white;
-    color: #667eea;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.3s ease;
-}
-
-.lang-btn:hover {
-    background: #667eea;
-    color: white;
-    transform: translateY(-2px);
-}
-
-.lang-btn.active {
-    background: #667eea;
-    color: white;
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-}
+.language-selector { display: none; }
+.lang-btn { display: none; }
 
 /* Progress Bar */
 .progress-container {
@@ -125,12 +92,12 @@ header h2 {
 
 /* Lyrics Display */
 .lyrics-container {
-    background: #f7fafc;
+    background: #fff0f5;
     border-radius: 15px;
     padding: 30px;
     margin-bottom: 30px;
     min-height: 400px;
-    border: 2px solid #e2e8f0;
+    border: 2px solid #ffd6e7;
 }
 
 .lyrics-display {
@@ -153,12 +120,12 @@ header h2 {
 }
 
 .lyric-line.current {
-    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    background: linear-gradient(135deg, #ffe0e9 0%, #ffd6e7 100%);
     color: #2d3748;
     transform: scale(1.02);
-    border-left: 5px solid #f56565;
-    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
-    animation: pulse-line 1.5s ease-in-out infinite alternate;
+    border-left: 5px solid #e53e3e;
+    box-shadow: 0 8px 25px rgba(229, 62, 62, 0.2);
+    animation: pulse-line 2s ease-in-out infinite alternate;
 }
 
 .lyric-line.highlighted {
@@ -199,20 +166,20 @@ header h2 {
 }
 
 .word.highlighted {
-    background: #ffd700;
-    color: #333;
+    background: #ffdae0;
+    color: #9b2c2c;
     font-weight: bold;
-    transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5);
+    transform: scale(1.08);
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.25);
 }
 
 .spanish-lyrics {
-    color: #2d3748;
+    color: #7b341e;
     margin-bottom: 10px;
 }
 
 .english-lyrics {
-    color: #4a5568;
+    color: #5a5566;
     font-style: italic;
     font-size: 0.95em;
 }
@@ -237,7 +204,7 @@ header h2 {
 }
 
 #playPauseBtn {
-    background: linear-gradient(135deg, #48bb78, #38a169);
+    background: linear-gradient(135deg, #f56565, #e53e3e);
     color: white;
 }
 

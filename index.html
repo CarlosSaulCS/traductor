@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sincronizador de Letras - Cama y Mesa</title>
+    <title>Para ti — Cama y Mesa</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🎵 Sincronizador de Letras</h1>
-            <h2>"Cama y Mesa" - Roberto Carlos</h2>
+            <h1>💞 Para ti</h1>
+            <h2>"Cama y Mesa" — Español e Inglés, palabra por palabra</h2>
         </header>
 
         <main>
@@ -23,18 +23,7 @@
                 <p class="audio-note">✅ Audio cargado: Roberto Carlos - Cama y Mesa.mp3</p>
             </div>
 
-            <!-- Language Selector -->
-            <div class="language-selector">
-                <button id="spanishBtn" class="lang-btn active" onclick="switchLanguage('spanish')">
-                    🇪🇸 Español
-                </button>
-                <button id="englishBtn" class="lang-btn" onclick="switchLanguage('english')">
-                    🇬🇧 English
-                </button>
-                <button id="bothBtn" class="lang-btn" onclick="switchLanguage('both')">
-                    🌍 Ambos/Both
-                </button>
-            </div>
+            <!-- Language Selector removed: always shows both lyrics -->
 
             <!-- Progress Bar -->
             <div class="progress-container">
@@ -49,67 +38,18 @@
                 </div>
             </div>
 
-            <!-- Controls -->
+            <!-- Controls (minimal) -->
             <div class="controls">
                 <button id="playPauseBtn" onclick="togglePlayPause()">▶️ Reproducir</button>
-                <button id="resetBtn" onclick="resetSong()">🔄 Reiniciar</button>
-                <button onclick="logCurrentTime()">⏱️ Ver Tiempo Actual</button>
-                <input type="file" id="audioFileInput" accept="audio/*" onchange="loadAudioFile(event)">
-                <label for="audioFileInput" class="file-input-label">📁 Cargar Audio</label>
             </div>
 
-            <!-- Sync & Calibration Tools -->
-            <div class="sync-controls">
-                <div class="sync-row">
-                    <button id="syncModeBtn" type="button">🎬 Modo Sincronización: OFF</button>
-                    <div class="calibration">
-                        <label>
-                            <input id="autoSyncInput" type="checkbox" checked>
-                            Auto Sync
-                        </label>
-                        <label>
-                            Offset (s):
-                            <input id="offsetInput" type="number" step="0.05" value="0">
-                        </label>
-                        <label>
-                            Rate:
-                            <input id="rateInput" type="number" step="0.005" value="1.040">
-                        </label>
-                        <label>
-                            Lead (s):
-                            <input id="leadInput" type="number" step="0.01" value="0.15">
-                        </label>
-                        <label>
-                            Line Lead (s):
-                            <input id="lineLeadInput" type="number" step="0.01" value="0.44">
-                        </label>
-                    </div>
-                </div>
-                <div class="sync-row">
-                    <button id="prevLineBtn" type="button">⏮️ Línea -</button>
-                    <button id="nextLineBtn" type="button">⏭️ Línea +</button>
-                    <button id="resetLineBtn" type="button">🧹 Limpiar tiempos de línea</button>
-                    <button id="saveTimingsBtn" type="button">💾 Descargar tiempos</button>
-                </div>
-                <div class="sync-row">
-                    <button id="anchorStartBtn" type="button">⚓ Anclar inicio (usa tiempo actual)</button>
-                    <button id="anchorRateBtn" type="button">📏 Calcular Rate (usa este punto)</button>
-                </div>
-                <p class="sync-hint">En modo sincronización, presiona la barra espaciadora al ritmo: una pulsación por palabra. Enter para cerrar la línea, Backspace para deshacer el último punto.</p>
-            </div>
+            <!-- Sync & Calibration Tools removed for a simple, romantic experience -->
 
-            <!-- Timing Helper -->
-            <div class="timing-helper">
-                <p><strong>🔧 Para ajustar sincronización:</strong></p>
-                <p>1. Abre la consola del navegador (F12)</p>
-                <p>2. Reproduce la canción y ejecuta <code>logCurrentTime()</code> cuando empiece cada línea</p>
-                <p>3. Anota los tiempos y actualiza el archivo script.js</p>
-                <p><span id="currentTimeDisplay">Tiempo actual: 0:00</span></p>
-            </div>
+            <!-- Timing Helper removed -->
         </main>
 
         <footer>
-            <p>Creado para sincronizar letras de canciones en tiempo real</p>
+            <p>Con cariño, para que puedas escucharla y entenderla 💗</p>
         </footer>
     </div>
 
