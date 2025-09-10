@@ -9,18 +9,19 @@ let currentLineIndex = -1;
 let currentWordIndex = -1;
 // Drift calibration
 let offsetSeconds = 0; // add/subtract seconds to align start
-let rateFactor = 1.07;  // slightly faster to reduce residual lag
+let rateFactor = 1.065;  // slight backoff for stability while staying fast
 let anchorRef = null;   // {effAtAnchor, rawAtAnchor}
 // High-frequency ticker for smooth sync
 let rafId = null;
 let lastProgressUpdate = 0;
-let leadSeconds = 0.28; // render word highlights slightly ahead (further increased)
-let lineLeadSeconds = 1.0; // even earlier line activation to reduce perceived drift
+let lastMicroAdjust = 0; // timestamp for micro-correction pacing
+let leadSeconds = 0.26; // render word highlights slightly ahead, balanced
+let lineLeadSeconds = 0.9; // slightly reduced to avoid premature jumps
 let autoSync = true;
 let lastLineCalib = null; // {raw, eff}
-const smoothAlpha = 0.3; // slightly faster adaptation for rate/offset updates
-const MAX_RATE_STEP = 0.010; // limit rate change per boundary
-const MAX_OFFSET_STEP = 0.20; // limit offset change (seconds) per boundary
+const smoothAlpha = 0.2; // moderate adaptation for rate/offset updates
+const MAX_RATE_STEP = 0.006; // limit rate change per boundary (safer)
+const MAX_OFFSET_STEP = 0.08; // limit offset change (seconds) per boundary (safer)
 // Sync (tap) mode state
 let syncMode = false;
 let tapState = {
@@ -376,10 +377,11 @@ function highlightCurrentLyrics() {
     }
 
     const prevLine = currentLineIndex;
+    const lineChanged = activeLine !== currentLineIndex;
     currentLineIndex = activeLine;
     currentWordIndex = activeWord;
-    // Re-render lines and words
-    displayLyrics();
+    // Re-render entire lyrics only when line changes to reduce DOM churn
+    if (lineChanged) displayLyrics();
 
     // Apply word highlight
     document.querySelectorAll('.word.highlighted').forEach(el => el.classList.remove('highlighted'));
@@ -390,7 +392,7 @@ function highlightCurrentLyrics() {
     document.querySelectorAll(`.english-lyrics .word[data-line="${activeLine}"][data-word="${activeWord}"]`).forEach(el => el.classList.add('highlighted'));
     document.querySelectorAll(`.spanish-lyrics .word[data-line="${activeLine}"][data-word="${activeWord}"]`).forEach(el => el.classList.add('highlighted'));
     }
-    scrollToCurrentLine();
+    if (lineChanged) scrollToCurrentLine();
 
     // Auto-sync at line boundaries: when a new line becomes active, recalibrate slightly
     if (autoSync && activeLine >= 0 && activeLine !== prevLine) {
@@ -771,15 +773,19 @@ function tick(now) {
     // Gentle micro-correction inside lines: nudge effective mapping towards current line
     if (autoSync && currentLineIndex >= 0) {
         const L = lyricsData[currentLineIndex];
-        const raw = audioPlayer.currentTime;
         const eff = getEffectiveTime();
         const mid = (L.startTime + L.endTime) / 2;
-        // Pull towards the center of the active line to reduce mid-line drift
         const err = (mid - eff);
-        // Very small proportional correction on offset (bounded)
-        const k = 0.02; // gain
-        const adjust = Math.max(-0.01, Math.min(0.01, k * err));
-        offsetSeconds += adjust;
+        const nowMs = performance.now();
+        if (!lastMicroAdjust) lastMicroAdjust = nowMs;
+        const dt = Math.min(0.1, Math.max(0, (nowMs - lastMicroAdjust) / 1000));
+        if (nowMs - lastMicroAdjust > 50) {
+            // Tiny proportional correction scaled by elapsed time, capped
+            const k = 0.5; // small gain per second
+            const adjust = Math.max(-0.003, Math.min(0.003, k * err * dt));
+            offsetSeconds += adjust;
+            lastMicroAdjust = nowMs;
+        }
     }
     highlightCurrentLyrics();
     if (!lastProgressUpdate || now - lastProgressUpdate > 100) {
