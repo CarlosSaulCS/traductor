@@ -9,13 +9,13 @@ let currentLineIndex = -1;
 let currentWordIndex = -1;
 // Drift calibration
 let offsetSeconds = 0; // add/subtract seconds to align start
-let rateFactor = 1.06;  // slightly faster to reduce residual lag
+let rateFactor = 1.07;  // slightly faster to reduce residual lag
 let anchorRef = null;   // {effAtAnchor, rawAtAnchor}
 // High-frequency ticker for smooth sync
 let rafId = null;
 let lastProgressUpdate = 0;
-let leadSeconds = 0.24; // render word highlights slightly ahead (further increased)
-let lineLeadSeconds = 0.9; // more aggressive early line activation to reduce perceived drift
+let leadSeconds = 0.28; // render word highlights slightly ahead (further increased)
+let lineLeadSeconds = 1.0; // even earlier line activation to reduce perceived drift
 let autoSync = true;
 let lastLineCalib = null; // {raw, eff}
 const smoothAlpha = 0.2; // smoothing for rate/offset updates
