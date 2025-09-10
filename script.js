@@ -14,7 +14,7 @@ let anchorRef = null;   // {effAtAnchor, rawAtAnchor}
 // High-frequency ticker for smooth sync
 let rafId = null;
 let lastProgressUpdate = 0;
-let leadSeconds = 0.15; // render word highlights slightly ahead
+let leadSeconds = 0.20; // render word highlights slightly ahead (increased)
 let lineLeadSeconds = 0.9; // more aggressive early line activation to reduce perceived drift
 let autoSync = true;
 let lastLineCalib = null; // {raw, eff}
