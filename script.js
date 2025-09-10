@@ -18,7 +18,9 @@ let leadSeconds = 0.28; // render word highlights slightly ahead (further increa
 let lineLeadSeconds = 1.0; // even earlier line activation to reduce perceived drift
 let autoSync = true;
 let lastLineCalib = null; // {raw, eff}
-const smoothAlpha = 0.2; // smoothing for rate/offset updates
+const smoothAlpha = 0.3; // slightly faster adaptation for rate/offset updates
+const MAX_RATE_STEP = 0.010; // limit rate change per boundary
+const MAX_OFFSET_STEP = 0.20; // limit offset change (seconds) per boundary
 // Sync (tap) mode state
 let syncMode = false;
 let tapState = {
@@ -395,7 +397,7 @@ function highlightCurrentLyrics() {
         const L = lyricsData[activeLine];
         const rawNow = audioPlayer.currentTime;
         const effTarget = L.startTime; // where we should be at line start
-        if (lastLineCalib) {
+    if (lastLineCalib) {
             const raw1 = lastLineCalib.raw;
             const eff1 = lastLineCalib.eff;
             const raw2 = rawNow;
@@ -404,9 +406,11 @@ function highlightCurrentLyrics() {
             if (Math.abs(denom) > 0.1) {
                 const calcRate = (eff2 - eff1) / denom;
                 const calcOffset = eff1 - calcRate * raw1;
-                // Smooth update
-                rateFactor = (1 - smoothAlpha) * rateFactor + smoothAlpha * calcRate;
-                offsetSeconds = (1 - smoothAlpha) * offsetSeconds + smoothAlpha * calcOffset;
+        // Incremental, clamped updates to avoid jumps
+        const rateDelta = Math.max(-MAX_RATE_STEP, Math.min(MAX_RATE_STEP, (calcRate - rateFactor) * smoothAlpha));
+        const offsetDelta = Math.max(-MAX_OFFSET_STEP, Math.min(MAX_OFFSET_STEP, (calcOffset - offsetSeconds) * smoothAlpha));
+        rateFactor = Math.max(0.9, Math.min(1.2, rateFactor + rateDelta));
+        offsetSeconds = offsetSeconds + offsetDelta;
                 const rateInput = document.getElementById('rateInput'); if (rateInput) rateInput.value = rateFactor.toFixed(3);
                 const offsetInput = document.getElementById('offsetInput'); if (offsetInput) offsetInput.value = offsetSeconds.toFixed(2);
             }
@@ -764,6 +768,19 @@ function computeRateFromAnchor() {
 
 // --------- RAF ticker for smoother sync ---------
 function tick(now) {
+    // Gentle micro-correction inside lines: nudge effective mapping towards current line
+    if (autoSync && currentLineIndex >= 0) {
+        const L = lyricsData[currentLineIndex];
+        const raw = audioPlayer.currentTime;
+        const eff = getEffectiveTime();
+        const mid = (L.startTime + L.endTime) / 2;
+        // Pull towards the center of the active line to reduce mid-line drift
+        const err = (mid - eff);
+        // Very small proportional correction on offset (bounded)
+        const k = 0.02; // gain
+        const adjust = Math.max(-0.01, Math.min(0.01, k * err));
+        offsetSeconds += adjust;
+    }
     highlightCurrentLyrics();
     if (!lastProgressUpdate || now - lastProgressUpdate > 100) {
         updateProgress();
