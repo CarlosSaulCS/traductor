@@ -433,7 +433,7 @@ function updateProgress() {
         // Update current time display
         const timeDisplay = document.getElementById('currentTimeDisplay');
         if (timeDisplay) {
-            timeDisplay.textContent = `Tiempo actual: ${formatTime(audioPlayer.currentTime)}`;
+            timeDisplay.textContent = `Current time: ${formatTime(audioPlayer.currentTime)}`;
         }
     }
 }
@@ -449,9 +449,9 @@ function togglePlayPause() {
 function updatePlayButton() {
     const button = document.getElementById('playPauseBtn');
     if (isPlaying) {
-        button.textContent = '⏸️ Pausar';
+    button.textContent = '⏸️ Pause';
     } else {
-        button.textContent = '▶️ Reproducir';
+    button.textContent = '▶️ Play';
     }
 }
 
@@ -499,21 +499,21 @@ function formatTime(seconds) {
 function logCurrentTime() {
     const raw = getCurrentTime();
     const eff = getEffectiveTime();
-    console.log(`⏰ Tiempo audio: ${formatTime(raw)} (${raw.toFixed(2)}s) | efectivo: ${formatTime(eff)} (${eff.toFixed(2)}s)`);
-    console.log(`🎯 Sugerencia: usa Offset y Rate para corregir desfase progresivo (offset=${offsetSeconds.toFixed(2)}, rate=${rateFactor.toFixed(3)})`);
+    console.log(`⏰ Audio time: ${formatTime(raw)} (${raw.toFixed(2)}s) | effective: ${formatTime(eff)} (${eff.toFixed(2)}s)`);
+    console.log(`🎯 Tip: use Offset and Rate to correct progressive drift (offset=${offsetSeconds.toFixed(2)}, rate=${rateFactor.toFixed(3)})`);
     return eff;
 }
 
 // Show timing helper in console
-console.log("🎵 Herramientas de sincronización disponibles:");
-console.log("• getCurrentTime() - obtener tiempo actual");
-console.log("• logCurrentTime() - obtener tiempo actual formateado");
-console.log("• formatTime(segundos) - convertir segundos a mm:ss");
-console.log("📍 INSTRUCCIONES PARA SINCRONIZAR:");
-console.log("1. Reproduce la canción");
-console.log("2. Cuando escuches que Roberto Carlos empieza a cantar cada línea, ejecuta: logCurrentTime()");
-console.log("3. Anota los tiempos que te aparezcan para cada línea");
-console.log("4. Comparte esos tiempos para ajustar la sincronización perfecta");
+console.log("🎵 Sync helper (dev):");
+console.log("• getCurrentTime() - get current time");
+console.log("• logCurrentTime() - log current time formatted");
+console.log("• formatTime(seconds) - convert to mm:ss");
+console.log("📍 HOW TO SYNC (dev):");
+console.log("1. Play the song");
+console.log("2. When each line starts singing, run: logCurrentTime()");
+console.log("3. Note down times if you want to fine-tune");
+console.log("4. Share the times to adjust perfectly");
 
 // --------- Helpers for effective time and words ----------
 function getEffectiveTime() {
@@ -569,7 +569,7 @@ function toggleSyncMode() {
         tapState.lineIndex = findLineIndexAt(t);
         tapState.nextWord = 0;
         tapState.taps = [];
-        console.log('🟢 Tap mode ON. Space=palabra, Enter=cerrar línea, Backspace=deshacer. Línea:', tapState.lineIndex);
+    console.log('🟢 Tap mode ON. Space=word, Enter=close line, Backspace=undo. Line:', tapState.lineIndex);
     } else {
         console.log('🔴 Tap mode OFF');
     }
@@ -600,7 +600,7 @@ function jumpLine(delta) {
     const targetEff = L.startTime;
     const raw = (targetEff - offsetSeconds) / Math.max(0.0001, rateFactor);
     if (!isNaN(raw) && raw >= 0) audioPlayer.currentTime = raw;
-    console.log('➡️ Línea actual para tap:', tapState.lineIndex, '-', L.spanish);
+    console.log('➡️ Current line for tap:', tapState.lineIndex, '-', L.spanish);
 }
 
 function tapWord() {
@@ -610,7 +610,7 @@ function tapWord() {
     ensureWordsForLine(L);
     const t = getEffectiveTime();
     const k = tapState.nextWord;
-    if (k >= L.words.length) { console.log('⚠️ Ya se capturaron todas las palabras de esta línea. Presiona Enter.'); return; }
+    if (k >= L.words.length) { console.log('⚠️ All words for this line captured. Press Enter.'); return; }
     // Set start for current word and end of previous
     if (k === 0) {
         L.words[0].startTime = Math.max(L.startTime, Math.min(t, L.endTime));
@@ -642,7 +642,7 @@ function endCurrentLine() {
     L.manualTimings = true;
     displayLyrics();
     highlightCurrentLyrics();
-    console.log('✅ Línea cerrada. Puedes pasar a la siguiente (⏭️).');
+    console.log('✅ Line closed. You can move to the next (⏭️).');
 }
 
 function undoTap() {
@@ -734,23 +734,23 @@ function setAnchorStartFromNow() {
     const offsetInput = document.getElementById('offsetInput');
     if (offsetInput) offsetInput.value = offsetSeconds.toFixed(2);
     anchorRef = { effAtAnchor: L.startTime, rawAtAnchor: tRaw };
-    console.log(`⚓ Anclado: offset=${offsetSeconds.toFixed(2)} (línea ${idx})`);
+    console.log(`⚓ Anchored: offset=${offsetSeconds.toFixed(2)} (line ${idx})`);
 }
 
 function computeRateFromAnchor() {
     // Use two-point calibration: (raw1, eff1) from anchor and (raw2, eff2) now
-    if (!anchorRef) { console.log('Primero usa "⚓ Anclar inicio" en la primera línea cantada.'); return; }
+    if (!anchorRef) { console.log('Use "⚓ Anchor start" on the first sung line first.'); return; }
     const raw2 = audioPlayer.currentTime;
     // Estimate current effective time to find nearest line, then take its startTime as eff2
     const effEstimate = getEffectiveTime();
     const idx = findLineIndexAt(effEstimate);
-    if (idx < 0) { console.log('No se pudo identificar la línea actual. Avanza a una línea cantada y vuelve a intentar.'); return; }
+    if (idx < 0) { console.log('Could not identify current line. Go to a sung line and try again.'); return; }
     const eff2 = lyricsData[idx].startTime;
 
     const raw1 = anchorRef.rawAtAnchor;
     const eff1 = anchorRef.effAtAnchor;
     const denom = (raw2 - raw1);
-    if (Math.abs(denom) < 0.05) { console.log('Selecciona un segundo punto más alejado en el tiempo para calcular el Rate.'); return; }
+    if (Math.abs(denom) < 0.05) { console.log('Pick a second point further in time to compute the rate.'); return; }
     const newRate = (eff2 - eff1) / denom;
     const newOffset = eff1 - newRate * raw1;
     rateFactor = newRate;
@@ -759,7 +759,7 @@ function computeRateFromAnchor() {
     const offsetInput = document.getElementById('offsetInput');
     if (rateInput) rateInput.value = rateFactor.toFixed(3);
     if (offsetInput) offsetInput.value = offsetSeconds.toFixed(2);
-    console.log(`📏 Calibrado: offset=${offsetSeconds.toFixed(2)}, rate=${rateFactor.toFixed(3)} (línea ${idx})`);
+    console.log(`📏 Calibrated: offset=${offsetSeconds.toFixed(2)}, rate=${rateFactor.toFixed(3)} (line ${idx})`);
 }
 
 // --------- RAF ticker for smoother sync ---------
